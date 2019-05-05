@@ -1,0 +1,1 @@
+/var/spool/slurm/d/job3487362/slurm_script: line 3: 27754 Segmentation fault      /homes/levnikolaj/Proj4_520/3way-openmp/openmp_comp $1

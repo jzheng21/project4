@@ -1,0 +1,2 @@
+/var/spool/slurm/d/job3483900/slurm_script: line 3: 20824 Killed                  /homes/levnikolaj/Proj4_520/3way-openmp/openmp_comp $1
+slurmstepd: error: Detected 1 oom-kill event(s) in step 3483900.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
