@@ -9,4 +9,4 @@
 #SBATCH --job-name=3way-mpi
 
 module load OpenMPI
-mpirun $HOME/Proj4_520/3way-mpi/mpi_comp
+mpirun $HOME/project4/mpi/mpi_comp

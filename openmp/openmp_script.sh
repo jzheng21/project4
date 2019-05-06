@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$HOME/Proj4_520/3way-openmp/openmp_comp
+$HOME/project4/openmp/openmp_comp

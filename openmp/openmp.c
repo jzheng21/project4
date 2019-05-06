@@ -20,8 +20,7 @@ typedef struct
 } processMem_t;
 
 
-/* This function is called in GetProcessMemory() to parse the parse line and return the uint32_t value of it.
- */
+/* This function is called in GetProcessMemory() to parse the parse line and return the uint32_t value of it.*/
 int parseLine(char *line)
 {
 	// This assumes that a digit will be found and the line ends in " Kb".
@@ -33,8 +32,7 @@ int parseLine(char *line)
 	return i;
 }
 
-/* Calculates the physical and virtual memory used.
- */
+/* Calculates the physical and virtual memory used.*/
 void GetProcessMemory(processMem_t* processMem)
 {
 	FILE *file = fopen("/proc/self/status", "r");
@@ -105,7 +103,6 @@ void main(int argc, char *argv[])
 
 /* The algorithm that finds the longest common substring.
  * Uses matrix table, dynamic array allocation.
- *
  */
 void algorithm(char **wiki_dump, char **longestCommonSubstring, int firstEntryIndex)
 {
