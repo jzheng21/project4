@@ -1,19 +1,17 @@
+#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <omp.h>
 #include "sys/types.h"
 #include "sys/sysinfo.h"
 #include <sys/time.h>
 
-#define NUM_WIKI_LINES 1000000
-
-
+#define NUM_WIKI_LINES 10000
 
 void algorithm();
 
-/* Stucture used to calculate virtual and physical memory.
+/* Stucture used to keep track of virtual and physical memory.
  */
 typedef struct
 {
@@ -22,8 +20,7 @@ typedef struct
 } processMem_t;
 
 
-/* This function is called in GetProcessMemory() to parse the parse
- * line and return the uint32_t value of it.
+/* This function is called in GetProcessMemory() to parse the parse line and return the uint32_t value of it.
  */
 int parseLine(char *line)
 {
@@ -61,7 +58,7 @@ void GetProcessMemory(processMem_t* processMem)
 
 void main(int argc, char *argv[])
 {
-	struct timeval t1, t2;
+	struct timeval time1, time2;
   int i, j, numOfThreads;
   FILE * fd = fopen("/homes/dan/625/wiki_dump.txt", "r");
   char *buffer = NULL;
@@ -83,7 +80,7 @@ void main(int argc, char *argv[])
     wiki_dump[i][line_length-2] = 0;
   }
 
-	gettimeofday(&t1, NULL);
+	gettimeofday(&time1, NULL);
 
   #pragma omp parallel for
     for (i = 0; i < NUM_WIKI_LINES - 1; i++) //TODO: i < NUM_WIKI_LINES - 1
@@ -93,29 +90,14 @@ void main(int argc, char *argv[])
     }
 		// TODO: add memory and time output
 
-	gettimeofday(&t2, NULL);
+	gettimeofday(&time2, NULL);
 	GetProcessMemory(&myMem);
 
-	elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0; //sec to ms
-	elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0; // us to ms
+	elapsedTime = (time2.tv_sec - time1.tv_sec) * 1000.0; //sec to ms
+	elapsedTime += (time2.tv_usec - time1.tv_usec) / 1000.0; // us to ms
 
 	printf("Memory, Threads, %d, vMem, %u KB, pMem, %u KB\n", numOfThreads, myMem.virtualMem, myMem.physicalMem);
 	printf("DATA, %f, Threads, %d\n", elapsedTime, numOfThreads);
-
-	/*
-	for(i = 0; i < NUM_WIKI_LINES - 1; i++) //TODO: i < NUM_WIKI_LINES - 1
-	{
-		printf("Lines%d-%d: ", i, i+1);
-		if(longestCommonSubstring[i] != NULL)
-		{
-			printf("%s\n", longestCommonSubstring[i]);
-			free(longestCommonSubstring[i]);
-		}
-		else
-		{
-			printf("None found\n");
-		}
-	}*/
 
 	free(longestCommonSubstring);
 	free(wiki_dump);
@@ -128,16 +110,12 @@ void main(int argc, char *argv[])
 void algorithm(char **wiki_dump, char **longestCommonSubstring, int firstEntryIndex)
 {
   int i, j, s1_len, s2_len, col, val, max = 0;
-	//printf("ThreadNum: %d; %d\n", omp_get_thread_num(), firstEntryIndex);
-
 	#pragma omp private(i, j, s1_len, s2_len, s1, s2, max, col, val)
 	{
 		char *s1 = wiki_dump[firstEntryIndex];
 		char *s2 = wiki_dump[firstEntryIndex + 1];
 		s1_len = strlen(wiki_dump[firstEntryIndex]);
 		s2_len = strlen(wiki_dump[firstEntryIndex + 1]);
-		//printf("ThreadNum: %d; s1_len:%d; s2_len:%d\n", omp_get_thread_num(), s1, s2);
-	  //int table[s1_len + 1][s2_len + 1];
 
 	  int **table = (int **)malloc((s1_len + 1) * sizeof(int *));
 	  for(i = 0; i < s1_len+1; i++)
@@ -179,7 +157,7 @@ void algorithm(char **wiki_dump, char **longestCommonSubstring, int firstEntryIn
 			{
 				substr[max-i] = s2[col-i];
 			}
-
+			//synchronization of critical
 			#pragma omg critical
 			{
 				longestCommonSubstring[firstEntryIndex] = (char *) malloc((max + 1) * sizeof(char));
